@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -19,7 +18,7 @@ type Config struct {
 func getConfigFilePath() (string, error) {
 	homePath, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("can't get home directory")
+		return "", err
 	}
 
 	configFilePath := filepath.Join(homePath, configFileName)
@@ -50,24 +49,24 @@ func Read() (Config, error) {
 
 	configFilePath, err := getConfigFilePath()
 	if err != nil {
-		return Config{}, fmt.Errorf("can't retrieve config file path")
+		return Config{}, err
 	}
 
 	jsonFile, err := os.Open(configFilePath)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't open %v", configFilePath)
+		return Config{}, err
 	}
 
 	defer jsonFile.Close()
 
 	jsonBody, err := io.ReadAll(jsonFile)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't read config file")
+		return Config{}, err
 	}
 
 	err = json.Unmarshal(jsonBody, &cfg)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't parse config file")
+		return Config{}, err
 	}
 
 	return cfg, nil
