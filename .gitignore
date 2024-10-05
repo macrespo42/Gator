@@ -78,4 +78,5 @@ tags
 # Persistent undo
 [._]*.un~
 
+Gator
 # End of https://www.toptal.com/developers/gitignore/api/go,macos,vim
