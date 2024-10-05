@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -18,7 +19,7 @@ type Config struct {
 func getConfigFilePath() (string, error) {
 	homePath, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("Can't get home directory")
+		return "", fmt.Errorf("can't get home directory")
 	}
 
 	configFilePath := filepath.Join(homePath, configFileName)
@@ -36,7 +37,7 @@ func write(cfg Config) error {
 		return err
 	}
 
-	err = os.WriteFile(configFilePath, raw_cfg, 0666)
+	err = os.WriteFile(configFilePath, raw_cfg, 0600)
 	if err != nil {
 		return err
 	}
@@ -49,21 +50,24 @@ func Read() (Config, error) {
 
 	configFilePath, err := getConfigFilePath()
 	if err != nil {
-		return Config{}, fmt.Errorf("Can't retrieve config file path")
+		return Config{}, fmt.Errorf("can't retrieve config file path")
 	}
 
 	jsonFile, err := os.Open(configFilePath)
-
-	defer jsonFile.Close()
 	if err != nil {
-		return Config{}, fmt.Errorf("Can't read config file")
+		return Config{}, fmt.Errorf("can't open %v", configFilePath)
 	}
 
+	defer jsonFile.Close()
+
 	jsonBody, err := io.ReadAll(jsonFile)
+	if err != nil {
+		return Config{}, fmt.Errorf("can't read config file")
+	}
 
 	err = json.Unmarshal(jsonBody, &cfg)
 	if err != nil {
-		return Config{}, fmt.Errorf("Can't parse config file")
+		return Config{}, fmt.Errorf("can't parse config file")
 	}
 
 	return cfg, nil
@@ -71,5 +75,8 @@ func Read() (Config, error) {
 
 func (c *Config) SetUser(username string) {
 	c.CurrentUserName = username
-	write(*c)
+	err := write(*c)
+	if err != nil {
+		log.Fatal("Can't update gator config")
+	}
 }
