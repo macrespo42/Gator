@@ -1,13 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/macrespo42/Gator/internal/config"
+	"github.com/macrespo42/Gator/internal/database"
 )
 
 type state struct {
 	Cfg *config.Config
+	Db  *database.Queries
 }
 
 type command struct {
@@ -17,6 +23,30 @@ type command struct {
 
 type commands struct {
 	Names map[string]func(*state, command) error
+}
+
+func handlerRegister(s *state, cmd command) error {
+	if len(cmd.Arguments) == 0 {
+		return fmt.Errorf("the register handler expects a single argument the username")
+	}
+
+	userParams := database.CreateUserParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.Arguments[0],
+	}
+
+	usr, err := s.Db.CreateUser(context.Background(), userParams)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(1)
+	}
+
+	s.Cfg.SetUser(usr.Name)
+	fmt.Printf("%v\n", usr)
+
+	return nil
 }
 
 func handlerLogin(s *state, cmd command) error {
