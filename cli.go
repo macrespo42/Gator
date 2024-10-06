@@ -25,6 +25,16 @@ type commands struct {
 	Names map[string]func(*state, command) error
 }
 
+func handlerReset(s *state, cmd command) error {
+	err := s.Db.DeleteAllUsers(context.Background())
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Command %s executed with success.\n", cmd.Name)
+	return nil
+}
+
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.Arguments) == 0 {
 		return fmt.Errorf("the register handler expects a single argument the username")
