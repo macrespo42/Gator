@@ -54,6 +54,11 @@ func handlerLogin(s *state, cmd command) error {
 		return fmt.Errorf("the login handler expects a single argument the username")
 	}
 
+	_, err := s.Db.GetUser(context.Background(), cmd.Arguments[0])
+	if err != nil {
+		return fmt.Errorf("can't login the user does not exist")
+	}
+
 	s.Cfg.SetUser(cmd.Arguments[0])
 
 	fmt.Println("the user has been set")
