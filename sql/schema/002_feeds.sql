@@ -1,9 +1,4 @@
-CREATE TABLE users (
-  id UUID PRIMARY KEY,
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
-  name VARCHAR(32) UNIQUE NOT NULL
-);
+-- +goose up
 
 create table feeds(
   id SERIAL PRIMARY KEY,
@@ -17,3 +12,6 @@ create table feeds(
   REFERENCES users(id)
   ON DELETE CASCADE
 );
+
+-- +goose down
+DROP TABLE feeds;
