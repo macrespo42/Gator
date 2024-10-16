@@ -10,6 +10,23 @@ import (
 	"github.com/macrespo42/Gator/internal/database"
 )
 
+func handlerFeeds(s *state, _ command) error {
+	feeds, err := s.Db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for index := range feeds {
+		feed := feeds[index]
+		user, err := s.Db.GetUserNameById(context.Background(), feed.UserID)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%s: %s created by %s\n", feed.Name, feed.Url, user)
+	}
+	return nil
+}
+
 func handlerAddFeed(s *state, cmd command) error {
 	if len(cmd.Arguments) < 2 {
 		return fmt.Errorf("Please provie the name and url of the feed as arguments")

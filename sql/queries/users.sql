@@ -18,7 +18,11 @@ DELETE
 FROM users
 RETURNING *;
 
-
 -- name: GetUsers :many
 SELECT id, created_at, updated_at, name
 FROM users;
+
+-- name: GetUserNameById :one
+SELECT name
+FROM users
+WHERE id = $1;
