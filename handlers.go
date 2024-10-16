@@ -10,6 +10,34 @@ import (
 	"github.com/macrespo42/Gator/internal/database"
 )
 
+func handlerAddFeed(s *state, cmd command) error {
+	if len(cmd.Arguments) < 2 {
+		return fmt.Errorf("Please provie the name and url of the feed as arguments")
+	}
+
+	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	feedParams := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		name:      cmd.Arguments[0],
+		Url:       cmd.Arguments[1],
+		UserID:    user,
+	}
+
+	feed, err := s.Db.CreateFeed(context.Background(), feedParams)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%v\n", feed)
+	return nil
+}
+
 func handlerUsers(s *state, _ command) error {
 	users, err := s.Db.GetUsers(context.Background())
 	if err != nil {

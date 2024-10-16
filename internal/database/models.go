@@ -5,10 +5,20 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type Feed struct {
+	ID        int32
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	Name      sql.NullString
+	Url       sql.NullString
+	UserID    sql.NullInt32
+}
 
 type User struct {
 	ID        uuid.UUID
