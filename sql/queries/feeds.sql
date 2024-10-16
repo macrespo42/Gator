@@ -8,4 +8,4 @@ VALUES (
     $5,
     $6
   )
-  RETURNING *;
+RETURNING *;

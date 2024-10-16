@@ -24,9 +24,9 @@ func handlerAddFeed(s *state, cmd command) error {
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		name:      cmd.Arguments[0],
+		Name:      cmd.Arguments[0],
 		Url:       cmd.Arguments[1],
-		UserID:    user,
+		UserID:    user.ID,
 	}
 
 	feed, err := s.Db.CreateFeed(context.Background(), feedParams)
