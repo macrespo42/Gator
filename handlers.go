@@ -29,7 +29,7 @@ func handlerFeeds(s *state, _ command) error {
 
 func handlerAddFeed(s *state, cmd command) error {
 	if len(cmd.Arguments) < 2 {
-		return fmt.Errorf("Please provie the name and url of the feed as arguments")
+		return fmt.Errorf("please provie the name and url of the feed as arguments")
 	}
 
 	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
