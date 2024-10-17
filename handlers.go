@@ -10,6 +10,53 @@ import (
 	"github.com/macrespo42/Gator/internal/database"
 )
 
+func handlerFollowing(s *state, _ command) error {
+	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	followedFeeds, err := s.Db.GetFeedFollowForUser(context.Background(), user.Name)
+
+	for index := range followedFeeds {
+		fmt.Println(followedFeeds[index].FeedName)
+	}
+
+	return nil
+}
+
+func handlerFollow(s *state, cmd command) error {
+	if len(cmd.Arguments) < 1 {
+		return fmt.Errorf("please provide an url as argument")
+	}
+
+	feed, err := s.Db.GetFeedByUrl(context.Background(), cmd.Arguments[0])
+	if err != nil {
+		return err
+	}
+
+	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	}
+
+	feedFollow, err := s.Db.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s now following %s ", feedFollow.UserName, feedFollow.FeedName)
+	return nil
+}
+
 func handlerFeeds(s *state, _ command) error {
 	feeds, err := s.Db.GetFeeds(context.Background())
 	if err != nil {
@@ -47,6 +94,19 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	feed, err := s.Db.CreateFeed(context.Background(), feedParams)
+	if err != nil {
+		return err
+	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	}
+
+	_, err = s.Db.CreateFeedFollow(context.Background(), feedFollowParams)
 	if err != nil {
 		return err
 	}
