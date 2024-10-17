@@ -10,6 +10,24 @@ import (
 	"github.com/macrespo42/Gator/internal/database"
 )
 
+func handleUnfollow(s *state, cmd command) error {
+	if len(cmd.Arguments) < 1 {
+		return fmt.Errorf("please provide the feed to unfollow as argument")
+	}
+
+	unfollowArg := database.DeleteFeedFollowParams{
+		Name: s.Cfg.CurrentUserName,
+		Url:  cmd.Arguments[0],
+	}
+
+	_, err := s.Db.DeleteFeedFollow(context.Background(), unfollowArg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func handlerFollowing(s *state, _ command) error {
 	followedFeeds, err := s.Db.GetFeedFollowForUser(context.Background(), s.Cfg.CurrentUserName)
 	if err != nil {
