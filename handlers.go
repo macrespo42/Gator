@@ -11,12 +11,10 @@ import (
 )
 
 func handlerFollowing(s *state, _ command) error {
-	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+	followedFeeds, err := s.Db.GetFeedFollowForUser(context.Background(), s.Cfg.CurrentUserName)
 	if err != nil {
 		return err
 	}
-
-	followedFeeds, err := s.Db.GetFeedFollowForUser(context.Background(), user.Name)
 
 	for index := range followedFeeds {
 		fmt.Println(followedFeeds[index].FeedName)
