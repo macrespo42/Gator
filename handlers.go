@@ -196,3 +196,20 @@ func handlerLogin(s *state, cmd command) error {
 	fmt.Println("the user has been set")
 	return nil
 }
+
+func handlerAgg(s *state, cmd command) error {
+	if len(cmd.Arguments) < 1 {
+		return fmt.Errorf("please provide a time ticker as argument")
+	}
+
+	time_between_reqs, err := time.ParseDuration(cmd.Arguments[0])
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Collection feeds every %s\n", time_between_reqs.String())
+	ticker := time.NewTicker(time_between_reqs)
+	for ; ; <-ticker.C {
+		scrapeFeed(s)
+	}
+}
