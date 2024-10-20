@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -212,4 +213,35 @@ func handlerAgg(s *state, cmd command) error {
 	for ; ; <-ticker.C {
 		scrapeFeed(s)
 	}
+}
+
+func handlerBrowse(s *state, cmd command) error {
+	limit := 2
+
+	if len(cmd.Arguments) == 1 {
+		i, err := strconv.Atoi(cmd.Arguments[0])
+		if err != nil {
+			return err
+		}
+		limit = i
+	}
+
+	user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	params := database.GetPostForUserParams{
+		UserID: user.ID,
+		Limit:  int32(limit),
+	}
+
+	posts, err := s.Db.GetPostForUser(context.Background(), params)
+	for _, post := range posts {
+		fmt.Printf("--- %s ---\n", post.Title)
+		fmt.Printf("    %v\n", post.Description)
+		fmt.Printf("Link: %s\n", post.Url)
+		fmt.Println("=====================================")
+	}
+	return nil
 }
