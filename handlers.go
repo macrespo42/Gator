@@ -237,6 +237,9 @@ func handlerBrowse(s *state, cmd command) error {
 	}
 
 	posts, err := s.Db.GetPostForUser(context.Background(), params)
+	if err != nil {
+		return err
+	}
 	for _, post := range posts {
 		fmt.Printf("--- %s ---\n", post.Title)
 		fmt.Printf("    %v\n", post.Description)
