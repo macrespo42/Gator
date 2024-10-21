@@ -211,7 +211,10 @@ func handlerAgg(s *state, cmd command) error {
 	fmt.Printf("Collection feeds every %s\n", time_between_reqs.String())
 	ticker := time.NewTicker(time_between_reqs)
 	for ; ; <-ticker.C {
-		scrapeFeed(s)
+		err := scrapeFeed(s)
+		if err != nil {
+			return err
+		}
 	}
 }
 

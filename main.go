@@ -11,6 +11,61 @@ import (
 	"github.com/macrespo42/Gator/internal/database"
 )
 
+func registerCommands(cmds commands) error {
+	err := cmds.register("login", handlerLogin)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("register", handlerRegister)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("reset", handlerReset)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("users", handlerUsers)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("agg", handlerAgg)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("feeds", handlerFeeds)
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("addfeed", middlewareLoggedIn(handlerAddFeed))
+	if err != nil {
+		return err
+	}
+
+	err = cmds.register("follow", middlewareLoggedIn(handlerFollow))
+	if err != nil {
+		return err
+	}
+	err = cmds.register("following", middlewareLoggedIn(handlerFollowing))
+	if err != nil {
+		return err
+	}
+	err = cmds.register("unfollow", middlewareLoggedIn(handleUnfollow))
+	if err != nil {
+		return err
+	}
+	err = cmds.register("browse", middlewareLoggedIn(handlerBrowse))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
@@ -34,18 +89,11 @@ func main() {
 		Names: make(map[string]func(*state, command) error),
 	}
 
-	cmds.register("login", handlerLogin)
-	cmds.register("register", handlerRegister)
-	cmds.register("reset", handlerReset)
-	cmds.register("users", handlerUsers)
-	cmds.register("agg", handlerAgg)
-	cmds.register("feeds", handlerFeeds)
-	cmds.register("addfeed", middlewareLoggedIn(handlerAddFeed))
-	cmds.register("follow", middlewareLoggedIn(handlerFollow))
-	cmds.register("following", middlewareLoggedIn(handlerFollowing))
-	cmds.register("unfollow", middlewareLoggedIn(handleUnfollow))
-	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
-
+	err = registerCommands(cmds)
+	if err != nil {
+		fmt.Printf("error when registering command")
+		os.Exit(1)
+	}
 	if len(os.Args) < 2 {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
