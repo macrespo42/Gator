@@ -1,3 +1,4 @@
+![code coverage badge](https://github.com/macrespo42/learn-cicd-starter/actions/workflows/ci.yml/badge.svg)
 # Gator 🐊 
 
 gator ? My favorite blog aggregator
